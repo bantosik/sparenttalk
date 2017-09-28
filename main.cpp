@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -26,10 +27,9 @@ public:
     {
         cout << "copy" << endl;
     }
-    object_t& operator=(const object_t& o)
+    object_t& operator=(object_t o) noexcept
     {
-        object_t tmp(o);
-        self_ = move(tmp.self_);
+        self_ = move(o.self_);
         return *this;
     }
     friend void draw(const object_t& x, ostream& out, size_t position)
@@ -58,11 +58,13 @@ void draw(const document_t& x, ostream& out, size_t position)
 int main()
 {
     document_t document;
+    document.reserve(5);
        
     document.emplace_back(0);
     document.emplace_back(1);
     document.emplace_back(2);
     document.emplace_back(3);
+    reverse(document.begin(), document.end());
 
     draw(document, cout, 0);
 }
