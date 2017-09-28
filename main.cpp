@@ -17,15 +17,13 @@ void draw(const int& x, ostream& out, size_t position)
 class object_t
 {
 public:
-    object_t(const int& x) : self_(make_unique<int_model_t>(x)) 
+    object_t(int x) : self_(make_unique<int_model_t>(move(x))) 
     {
-        cout << "ctor" << endl;
     }
     //this time we have to write our own copy ctor and assign operator as the compiler constructed is not 
     //enough (copies won't be disjoint if copied using compile supplied ctor)
     object_t(const object_t& o) : self_(make_unique<int_model_t>(*o.self_))
     {
-        cout << "copy" << endl;
     }
     //not all c++11 compliant compilers will treat operator=(object_t) as a cause to elide copy when object_t is copied in enclosing data structure
     object_t& operator=(const object_t& x)
@@ -40,7 +38,7 @@ public:
     { x.self_->draw_(out, position); }
 private:
     struct int_model_t {
-        int_model_t(const int& x) : data_(x) {}
+        int_model_t(int x) : data_(move(x)) {}
         void draw_(ostream& out, size_t position) const
         {
             draw(data_, out, position);
