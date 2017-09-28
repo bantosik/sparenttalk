@@ -27,11 +27,14 @@ public:
     {
         cout << "copy" << endl;
     }
-    object_t& operator=(object_t o) noexcept
+    //not all c++11 compliant compilers will treat operator=(object_t) as a cause to elide copy when object_t is copied in enclosing data structure
+    object_t& operator=(const object_t& x)
     {
-        self_ = move(o.self_);
+        object_t tmp(x);
+        *this = move(tmp);
         return *this;
     }
+    object_t& operator=(object_t&&) noexcept = default;
     //to benefit from move semantics related algos optimization we have to supply our own move constructor as it is not 
     //created
     object_t(object_t&& x) noexcept = default;
@@ -58,8 +61,22 @@ void draw(const document_t& x, ostream& out, size_t position)
     out << string(position, ' ') << "</document>" << endl;
 }
 
+struct some_t
+{
+    object_t member_;
+};
+
+some_t func() 
+{
+    return { 5 };
+}
+
 int main()
 {
+    cout << "some_t test start" << endl;
+    some_t x = { 0 };
+    x = func();    
+    cout << "some_t test end" << endl;
     document_t document;
     document.reserve(5);
        
