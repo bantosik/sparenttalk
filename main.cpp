@@ -30,9 +30,7 @@ public:
     //not all c++11 compliant compilers will treat operator=(object_t) as a cause to elide copy when object_t is copied in enclosing data structure
     object_t& operator=(const object_t& x)
     {
-        object_t tmp(x);
-        *this = move(tmp);
-        return *this;
+        return *this = object_t(x);
     }
     object_t& operator=(object_t&&) noexcept = default;
     //to benefit from move semantics related algos optimization we have to supply our own move constructor as it is not 
