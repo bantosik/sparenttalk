@@ -16,11 +16,16 @@ void draw(const int& x, ostream& out, size_t position)
 class object_t
 {
 public:
-    object_t(const int& x) : self_(make_unique<int_model_t>(x)) {}
+    object_t(const int& x) : self_(make_unique<int_model_t>(x)) 
+    {
+        cout << "ctor" << endl;
+    }
     //this time we have to write our own copy ctor and assign operator as the compiler constructed is not 
     //enough (copies won't be disjoint if copied using compile supplied ctor)
-    object_t(const object_t& o) : self_(make_unique<int_model_t>(*o.self_)) {}
-
+    object_t(const object_t& o) : self_(make_unique<int_model_t>(*o.self_))
+    {
+        cout << "copy" << endl;
+    }
     object_t& operator=(const object_t& o)
     {
         object_t tmp(o);
