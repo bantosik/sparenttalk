@@ -34,7 +34,7 @@ public:
     }
     //to benefit from move semantics related algos optimization we have to supply our own move constructor as it is not 
     //created
-    object_t(object_t&& x) noexcept : self_(move(x.self_)) {}
+    object_t(object_t&& x) noexcept = default;
     friend void draw(const object_t& x, ostream& out, size_t position)
     { x.self_->draw_(out, position); }
 private:
