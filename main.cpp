@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -27,6 +28,7 @@ public:
     //when going to many types we have to virtualize copy on the concept
     object_t(const object_t& o) : self_(o.self_->copy_())
     {
+        cout << "copy" << endl;
     }
     //not all c++11 compliant compilers will treat operator=(object_t) as a cause to elide copy when object_t is copied in enclosing data structure
     object_t& operator=(const object_t& x)
@@ -91,22 +93,28 @@ void draw(const my_class_t&, ostream& out, size_t position)
     out << string(position, ' ') << "my_class_t" << endl;
 }
 
+using history_t = vector<document_t>;
+
+void commit(history_t& x) { assert(x.size()); x.push_back(x.back()); }
+void undo(history_t& x) { assert(x.size()); x.pop_back(); }
+document_t& current(history_t& x) { assert(x.size()); return x.back(); }
+
 int main()
 {
-    cout << "some_t test start" << endl;
-    some_t x = { 0 };
-    x = func();    
-    cout << "some_t test end" << endl;
-    document_t document;
-    document.reserve(5);
-       
-    document.emplace_back(0);
-    //after adding string_model_t we can  add string to the structure
-    document.emplace_back(string("Hello!"));
-    document.emplace_back(2);
-    document.emplace_back(my_class_t());
-    document.emplace_back(document);
-    reverse(document.begin(), document.end());
+    history_t h(1);
+    current(h).emplace_back(0);
+    current(h).emplace_back(string("Hello!"));
+    draw(current(h), cout, 0);
+    cout << "---------------------" << endl;
 
-    draw(document, cout, 0);
+    commit(h);
+    current(h)[0] = 42.5;
+    current(h)[1] = string("World!");
+    current(h).emplace_back(current(h));
+    current(h).emplace_back(my_class_t());
+
+    draw(current(h), cout, 0);
+    cout << "--------------------" << endl;
+    undo(h);
+    draw(current(h), cout, 0);
 }
